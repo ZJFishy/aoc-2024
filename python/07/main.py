@@ -22,12 +22,27 @@ def check_mult(total_in: int, running_total: int, nums_in: list[int]):
         return check_add(total_in, running_total * nums_in[0], nums_in[1:]) or check_mult(total_in, running_total * nums_in[0], nums_in[1:])
 
 def check_entry(total_in: int, nums_in: list[int]):
-    print(f"Checking {total_in} against {nums_in}")
-    print(result := check_add(total_in, nums_in[0], nums_in[1:]) or check_mult(total_in, nums_in[0], nums_in[1:]))
-    return result
+    # return check_add(total_in, nums_in[0], nums_in[1:]) or check_mult(total_in, nums_in[0], nums_in[1:])
+    if len(nums_in) == 1:
+        return total_in == nums_in[0]
+    good = False
+    current_num = nums_in.pop()
+    # print(f"{total_in:<12}\t{current_num:<12}\t{nums_in}")
+    if total_in % current_num == 0:
+        good = good or check_entry(total_in // current_num, nums_in.copy())
+    if total_in > current_num:
+        good = good or check_entry(total_in - current_num, nums_in.copy())
+    else:
+        return False
+    return good
 
 def part_1():
-    return sum(k for k, v in entries.items() if check_entry(k, v))
+    good_totals = [k for k, v in {k: v for k, v in entries.items()}.items() if check_entry(k, v)]
+    for k, v in entries.items():
+        if k not in good_totals:
+            print(k, v)
+    print(sum(k for k in entries.keys()))
+    return sum(good_totals)
 
 def part_2():
     ...
